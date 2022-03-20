@@ -1,0 +1,89 @@
+local Plr = game.Players.LocalPlayer
+local cam = game.Workspace.CurrentCamera
+local AmountOfForce = 2750
+local F 
+local P1 
+local P2
+local MD = 150
+local Point = Plr.Character.PrimaryPart
+local MouseStatus = false
+local Able = false
+local AllowedPartName = "SwingPart"
+local PlayerMouse = Plr:GetMouse()
+local Rope 
+
+PlayerMouse.Button1Down:Connect(function()
+	Able = true
+end)
+
+PlayerMouse.Button1Up:Connect(function()
+	Able = false
+end)
+
+while wait() do
+	if MouseStatus then
+		if PlayerMouse.Target.Name == AllowedPartName then
+			Able = true
+		else
+			Able = false
+		end
+	end
+end
+
+
+
+if PlayerMouse.Target and Able and Rope == nil and PlayerMouse.Target:IsA("BasePart") and (PlayerMouse.Hit.p - Point.Position).Magnitude < MD and not PlayerMouse.Target.Parent:FindFirstChild("Humanoid") and not PlayerMouse.Target:IsA("Accessory") then
+
+	Rope = Instance.new("RopeConstraint", workspace)
+	Rope.Color = BrickColor.new("White")
+	Rope.Visible = true
+	Rope.Thickness = 0.4
+
+	P2 = Instance.new("Attachment",PlayerMouse.Target)
+	P1 = Instance.new("Attachment",Point)
+
+	P1.WorldPosition = Vector3.new(Point.Position.X,Point.Position.Y,Point.Position.Z)
+	P2.WorldPosition = PlayerMouse.Hit.p
+
+	local Pos = P2
+	Rope.Attachment0 = P1
+	Rope.Attachment1 = P2
+
+	Rope.Length = (P1.WorldPosition - P2.WorldPosition).Magnitude + 1.2
+
+	if not Point:FindFirstChild("BodyForce") then
+		F = Instance.new("BodyForce")
+		F.Force = cam.CFrame.LookVector * Vector3.new(AmountOfForce,0,AmountOfForce)
+	end
+end
+
+
+
+
+
+if F ~= nil then
+	if F.Name ~= nil then
+		F.Force = cam.CFrame.lookVector * Vector3.new(AmountOfForce,0,AmountOfForce)
+	end
+
+
+
+else
+
+	if game.Workspace:FindFirstChild("RopeConstraint") then 
+
+		game.Workspace.RopeConstraint:Destroy() 
+
+		if Plr.Character.HumanoidRootPart:FindFirstChild("BodyForce") then 
+			Rope:Destroy()
+			Rope = nil
+			P1:Destroy()
+			P2:Destroy()
+			wait(0.25)
+			F:Destroy()
+
+
+
+		end
+	end
+end
